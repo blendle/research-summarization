@@ -1,1 +1,2 @@
 models/word2vec/*
+models/bigram_svd*

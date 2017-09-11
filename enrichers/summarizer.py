@@ -28,14 +28,15 @@ class Summarizer(Enricher):
             self.stopword_list = json.load(fh)
         model_path = 'models/word2vec/blendle/word2vec_blendle'
         self.blendle_model = Word2Vec.load(model_path).wv
-        # model_path = 'models/word2vec/google/GoogleNews-vectors-negative300.bin'
-        # self.google_model = KeyedVectors.load_word2vec_format(model_path, binary=True)
+        model_path = 'models/word2vec/google/GoogleNews-vectors-negative300.bin'
+        self.google_model = KeyedVectors.load_word2vec_format(model_path, binary=True)
 
         # load other models
-        # self.svd_path = 'bin/summarization/yogatama_svd.model'
-        # self.svd = joblib.load(files.get(self.svd_path, self.svd_path))
-        # self.bigram_path = 'bin/summarization/yogatama_bigrams.pkl'
-        # self.final_bigrams = pickle.load(open(self.bigram_path, 'rb'))
+        dataset_name = kwargs.get('dataset_name')
+        svd_path = 'models/bigram_svd_{}.model'.format(dataset_name)
+        bigram_path = 'models/bigrams_{}.pkl'.format(dataset_name)
+        self.svd = joblib.load(svd_path)
+        self.final_bigrams = pickle.load(open(bigram_path, 'rb'))
 
     def __call__(self, data):
         summaries = {}
@@ -46,7 +47,7 @@ class Summarizer(Enricher):
         tokenized = list(self.get_tokenized_sentences(tokenized_body))
         stemmed = self.get_enrichment(data, 'stemmer')
         postagged = self.get_enrichment(data, 'postagger')
-        # google_model = self.google_model
+        google_model = self.google_model
         blendle_model = self.blendle_model
 
         # Sentence representations:
@@ -55,10 +56,12 @@ class Summarizer(Enricher):
         # Blendle tf-idf reweighted additive sentence embeddings
         w2v_tfidf_indices_blendle, w2v_tfidf_sums_blendle = repr.w2v_sentence_sums_tfidf(tokenized, blendle_model, idf_weight_dict)
         # Google tf-idf reweighted additive sentence embeddings
-        # w2v_tfidf_indices_google, w2v_tfidf_sums_google = repr.w2v_sentence_sums_tfidf(tokenized, google_model, idf_weight_dict)
+        w2v_tfidf_indices_google, w2v_tfidf_sums_google = repr.w2v_sentence_sums_tfidf(tokenized, google_model, idf_weight_dict)
         # Bigram representations for Yogatama et al. (2015)
-        # bigram_indices, bigram_repr     = repr.bigram_repr(stemmed=stemmed, stopwords=self.stopword_list, svd=self.svd, bigram_list=self.final_bigrams)
+        bigram_indices, bigram_repr     = repr.bigram_repr(stemmed=stemmed, stopwords=self.stopword_list, svd=self.svd, bigram_list=self.final_bigrams)
 
+
+        # Compute one or more sentence rankings based on representations
 
         # rankings['lb_2010'] = modified_greedy(sentences=sentences,
         #                                   tokenized=tokenized,

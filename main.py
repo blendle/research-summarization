@@ -9,36 +9,36 @@ with warnings.catch_warnings():
     warnings.filterwarnings('ignore', r'All-NaN (slice|axis) encountered')
 from enrichers.pipeline import Pipeline
 
+# FOR DUC 2002 DATASET
+dataset_name = 'duc'
+data_dirname = # TODO: set path
+sum_dirname = # TODO: set path
+articles = list(ducproc.data_generator(data_dirname))
+ducproc.add_summaries(articles, sum_dirname)
+
+# FOR TAC 2008 DATASET
+# dataset_name = 'tac'
+# data_dirname = # TODO: set path
+# sum_dirname = # TODO: set path
+# articles = list(tacproc.data_generator(data_dirname))
+# Articles are now actually clusters:
+# articles = tacproc.merge_clusters(articles)
+# tacproc.add_summaries(articles, sum_dirname)
+
+# FOR OPINOSIS DATASET
+# dataset_name = 'opinosis'
+# data_dirname = # TODO: set path
+# sum_dirname = # TODO: set path
+# articles = list(opiproc.data_generator(data_dirname))
+# opiproc.add_summaries(articles, sum_dirname)
+
 pipeline = Pipeline(('cleaner',
                      'sentence_splitter',
                      'tokenizer',
                      'stemmer',
                      'postagger',
-                     'summarizer'))
-
-# FOR DUC 2002 DATASET
-# dataset_name = 'duc'
-# data_dirname = "/home/Lucas/blendle/data/duc/2002/docs"
-# sum_dirname = "/home/Lucas/blendle/data/duc/2002/extracts_abstracts"
-# articles = list(ducproc.data_generator(data_dirname))
-# ducproc.add_summaries(articles, sum_dirname)
-
-# FOR TAC 2008 DATASET
-# dataset_name = 'tac'
-# data_dirname = '/home/Lucas/blendle/data/tac/2008/docs'
-# sum_dirname = '/home/Lucas/blendle/data/tac/2008/summaries'
-# articles = list(tacproc.data_generator(data_dirname))
-# # Articles are now actually clusters:
-# articles = tacproc.merge_clusters(articles)
-# tacproc.add_summaries(articles, sum_dirname)
-
-# FOR OPINOSIS DATASET
-dataset_name = 'opinosis'
-data_dirname = '/Users/Lucas/blendle/benchmark_sets/opinosis/topics'
-sum_dirname = '/Users/Lucas/blendle/benchmark_sets/opinosis/summaries'
-articles = list(opiproc.data_generator(data_dirname))[0:2]
-opiproc.add_summaries(articles, sum_dirname)
-
+                     'summarizer'),
+                    dataset_name=dataset_name)
 
 for index, article in enumerate(articles):
     pipeline(article)

@@ -5,17 +5,17 @@ It can be used to exactly reproduce all experimental results.
 
 # How to run
 
-Set the summarization methods in summarizer.py, and then run main.py to output results.
+Set the summarization function(s) in summarizer.py, and then run main.py to output results.
 
-Some files are missing:
+Some files are not included:
 
-* The word2vec models are not included in this repo due to their size;
+* The google word2vec model is not included in this repo, but can be downloaded [here](https://code.google.com/archive/p/word2vec/); it is expected to be in models/word2vec/google/
 * The datasets are not included as access can only be granted by NIST.
 
 ## Requirements
 
 * python >= 3.5
-* pythonrouge
+* [pythonrouge](https://github.com/tagucci/pythonrouge)
 * regex
 * scipy
 * networkx
