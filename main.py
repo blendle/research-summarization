@@ -29,7 +29,7 @@ from enrichers.pipeline import Pipeline
 dataset_name = 'opinosis'
 data_dirname = 'datasets/Opinosis/topics'
 sum_dirname = 'datasets/Opinosis/summaries'
-articles = list(opiproc.data_generator(data_dirname))[0:1]
+articles = list(opiproc.data_generator(data_dirname))
 opiproc.add_summaries(articles, sum_dirname)
 
 pipeline = Pipeline(('cleaner',
