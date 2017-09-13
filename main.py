@@ -10,11 +10,11 @@ with warnings.catch_warnings():
 from enrichers.pipeline import Pipeline
 
 # FOR DUC 2002 DATASET
-dataset_name = 'duc'
-data_dirname = # TODO: set path
-sum_dirname = # TODO: set path
-articles = list(ducproc.data_generator(data_dirname))
-ducproc.add_summaries(articles, sum_dirname)
+# dataset_name = 'duc'
+# data_dirname = # TODO: set path
+# sum_dirname = # TODO: set path
+# articles = list(ducproc.data_generator(data_dirname))
+# ducproc.add_summaries(articles, sum_dirname)
 
 # FOR TAC 2008 DATASET
 # dataset_name = 'tac'
@@ -26,11 +26,11 @@ ducproc.add_summaries(articles, sum_dirname)
 # tacproc.add_summaries(articles, sum_dirname)
 
 # FOR OPINOSIS DATASET
-# dataset_name = 'opinosis'
-# data_dirname = # TODO: set path
-# sum_dirname = # TODO: set path
-# articles = list(opiproc.data_generator(data_dirname))
-# opiproc.add_summaries(articles, sum_dirname)
+dataset_name = 'opinosis'
+data_dirname = 'datasets/Opinosis/topics'
+sum_dirname = 'datasets/Opinosis/summaries'
+articles = list(opiproc.data_generator(data_dirname))[0:1]
+opiproc.add_summaries(articles, sum_dirname)
 
 pipeline = Pipeline(('cleaner',
                      'sentence_splitter',

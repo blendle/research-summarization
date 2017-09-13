@@ -39,7 +39,7 @@ def add_summaries(articles, dirname):
         for name in files:
             filename = os.path.join(root, name)
             # Cluster id is in the first 7 characters of the filename
-            with open(filename, 'r') as fh:
+            with open(filename, 'rb') as fh:
                 summary = fh.read()
             # Add summary to right list (or initiate topic if not existing yet)
             topic_id = name[:-7]
