@@ -1,0 +1,2 @@
+models/word2vec/blendle/* filter=lfs diff=lfs merge=lfs -text
+models/bigram_svd* filter=lfs diff=lfs merge=lfs -text
