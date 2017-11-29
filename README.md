@@ -1,7 +1,8 @@
-# Blogpost code
+# Summarization research code
 
-This code accompanies a blog post on embedding-based extractive summarization from Blendle Research.
+This code accompanies the thesis on embedding-based extractive summarization from Blendle Research, written by Lucas de Haas.
 It can be used to exactly reproduce all experimental results.
+It thus contains implementations of various summarization algorithms that were previously not available.
 
 # How to run
 
