@@ -1,5 +1,4 @@
 import os
-os.chdir("/home/Lucas/blendle/blendle-etl")
 # Import Torch here to avoid static TLS issues while debugging in PyCharm
 import torch
 
