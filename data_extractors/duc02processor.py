@@ -17,9 +17,7 @@ def data_generator(dirname):
 
 
 def file_to_data(filename):
-    """Transforms a single summary file into a data object for pipeline.
-    NOTE that DUC-2002 data is the data with sentence breaks in this case!
-    """
+    """Transforms a single summary file into a data object for pipeline."""
     # open file
     with open(filename, 'r') as fh:
         # transform to real xml
@@ -37,12 +35,17 @@ def file_to_data(filename):
 
     # retrieve all tagged sentences from the document
     sentences = []
-    for y in find(['s'], article):
-        if type(y) is list:
-            for e in y:
-                sentences.append(e.get('#text', ''))
-        else:
-            sentences.append(y.get('#text', ''))
+
+    text = list(find(['TEXT'], article))
+    if type(text[0]) is list:
+        text = [item for sublist in text for item in sublist]
+    for x in text:
+        for y in find(['s'], x):
+            if type(y) is list:
+                for e in y:
+                    sentences.append(e.get('#text', ''))
+            else:
+                sentences.append(y.get('#text', ''))
 
     # put sentences in list of dicts
     body = [{'type': 'p', 'content': s} for s in sentences]

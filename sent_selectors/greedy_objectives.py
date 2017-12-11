@@ -6,7 +6,7 @@ def lin_bilmes_2010(similarity_matrix: np.ndarray,
                     sent_representations,
                     name_index_tuples,
                     sentence_words,
-                    model,
+                    word_distance_matrix,
                     document_vector,
                     clustered_indices,
                     all_indices: Tuple[int],
@@ -39,14 +39,14 @@ def lin_bilmes_2011(similarity_matrix: np.ndarray,
                     sent_representations,
                     name_index_tuples,
                     sentence_words,
-                    model,
+                    word_distance_matrix,
                     document_vector,
                     clustered_indices,
                     all_indices: Tuple[int],
                     summary_indices: List[int]):
     """Submodular mixture (coverage & diversity) from Lin & Bilmes (2011)."""
     # Trade-off values alpha & lambda are taken from Figure 1 in Lin & Bilmes (2011).
-    alpha = 1/6
+    alpha = 5/len(sent_representations)
     l_weight = 6
 
     summary_indices_per_cluster = [[i for i in summary_indices if i in cluster]
@@ -75,7 +75,7 @@ def doc_emb(similarity_matrix,
             sent_representations,
             name_index_tuples,
             sentence_words,
-            model,
+            word_distance_matrix,
             document_vector,
             clustered_indices,
             all_indices: Tuple[int],

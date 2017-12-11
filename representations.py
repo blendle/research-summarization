@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.decomposition import TruncatedSVD
 import string
 import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -57,19 +56,42 @@ def w2v_sentence_sums(tokenized, model, postagged, tagfilter):
 
     # POS-tag filtering, and punctuation removal
     preprocessed = [[word.translate(str.maketrans('', '', string.punctuation))
-                     for word_index, word in enumerate(sentence)
-                     # if postagged[sentence_index][word_index][1] in tagfilter
-                     ]
+                     for word_index, word in enumerate(sentence)]
                     for sentence_index, sentence in enumerate(preprocessed)]
 
-    vectorized = [[model[word] for word in sentence
-                   if word in model.vocab
-                   ]
+    vectorized = [[model.model[word] for word in sentence
+                   if word in model.model.vocab]
                   for sentence in preprocessed]
 
     sentence_sums_with_indices = [(index, np.sum(s, axis=0))
-                                      for index, s in enumerate(vectorized)
-                                      if len(s) >= min_word_vectors]
+                                  for index, s in enumerate(vectorized)
+                                  if len(s) >= min_word_vectors]
+
+    # With this, we can obtain original sentences by doing sentences[original_indices[index_of_vector]]
+    original_indices, sentence_sums = zip(*sentence_sums_with_indices)
+
+    return original_indices, np.array(sentence_sums)
+
+def w2v_sentence_means(tokenized, model):
+    # define minimum number of words in the sentence that are also in the word model.
+    min_word_vectors = 1
+
+    # lowercase & split tokenized sentences
+    preprocessed = [sentence.lower().split(' ')
+                    for sentence in tokenized]
+
+    # POS-tag filtering, and punctuation removal
+    preprocessed = [[word.translate(str.maketrans('', '', string.punctuation))
+                     for word_index, word in enumerate(sentence)]
+                    for sentence_index, sentence in enumerate(preprocessed)]
+
+    vectorized = [[model.model[word] for word in sentence
+                   if word in model.model.vocab]
+                  for sentence in preprocessed]
+
+    sentence_sums_with_indices = [(index, np.mean(s, axis=0))
+                                  for index, s in enumerate(vectorized)
+                                  if len(s) >= min_word_vectors]
 
     # With this, we can obtain original sentences by doing sentences[original_indices[index_of_vector]]
     original_indices, sentence_sums = zip(*sentence_sums_with_indices)
@@ -87,20 +109,18 @@ def w2v_sentence_sums_tfidf(tokenized, model, idf_weight_dict):
 
     # POS-tag filtering, and punctuation removal
     preprocessed = [[word.translate(str.maketrans('', '', string.punctuation))
-                     for word in sentence
-                     ]
+                     for word in sentence]
                     for sentence in preprocessed]
 
     # Remove OOV and non-TFIDF words
-    vectorized = [[model[word]*idf_weight_dict[word] for word in sentence
-                   if word in model.vocab
-                   and word in idf_weight_dict
-                   ]
+    vectorized = [[model.model[word]*idf_weight_dict[word] for word in sentence
+                   if word in model.model.vocab
+                   and word in idf_weight_dict]
                   for sentence in preprocessed]
 
     sentence_sums_with_indices = [(index, np.sum(s, axis=0))
-                                      for index, s in enumerate(vectorized)
-                                      if len(s) >= min_word_vectors]
+                                  for index, s in enumerate(vectorized)
+                                  if len(s) >= min_word_vectors]
 
     # With this, we can obtain original sentences by doing sentences[original_indices[index_of_vector]]
     original_indices, sentence_sums = zip(*sentence_sums_with_indices)
@@ -108,40 +128,33 @@ def w2v_sentence_sums_tfidf(tokenized, model, idf_weight_dict):
     return original_indices, np.array(sentence_sums)
 
 
-def w2v_sentence_sums_pca(tokenized, model, postagged, tagfilter):
-    original_indices, sentence_sums = w2v_sentence_sums(tokenized,
-                                                                model,
-                                                                postagged,
-                                                                tagfilter)
+def sif_embeddings(tokenized, model):
+    # SIF weighting param a has default value
+    a = 1e-3
+    # Lowercase & split tokenized sentences
+    preprocessed = [sentence.lower().split(' ')
+                    for sentence in tokenized]
 
-    # Remove first principle component from sentence vectors
-    sentence_sums = remove_pc(sentence_sums, npc=1)
+    # Punctuation removal
+    preprocessed = [[word.translate(str.maketrans('', '', string.punctuation))
+                     for word in sentence]
+                    for sentence in preprocessed]
 
-    return original_indices, sentence_sums
+    # Remove OOV words and multiply by smooth word emission probability
+    vectorized = [[model.model[word]* (a / (a + model.freq_dict[word])) for word in sentence
+                   if word in model.model.vocab]
+                  for sentence in preprocessed]
 
-
-def compute_pc(X, npc=1):
-    """
-    Compute the principal components
-    :param X: X[i,:] is a data point
-    :param npc: number of principal components to remove
-    :return: component_[i,:] is the i-th pc
-    """
-    svd = TruncatedSVD(n_components=npc, n_iter=7, random_state=42)
-    svd.fit(X)
-    return svd.components_
+    sentence_means_with_indices = [(index, np.mean(s, axis=0))
+                                  for index, s in enumerate(vectorized)
+                                  if len(s) > 0]
 
 
-def remove_pc(X, npc=1):
-    """
-    Remove the projection on the principal components
-    :param X: X[i,:] is a data point
-    :param npc: number of principal components to remove
-    :return: XX[i, :] is the data point after removing its projection
-    """
-    pc = compute_pc(X, npc)
-    if npc == 1:
-        XX = X - X.dot(pc.transpose()) * pc
-    else:
-        XX = X - X.dot(pc.transpose()).dot(pc)
-    return XX
+    # With this, we can obtain original sentences by doing sentences[original_indices[index_of_vector]]
+    original_indices, sentence_means = zip(*sentence_means_with_indices)
+
+    # Remove first principal component
+    sentence_means = np.array(sentence_means)
+    sentence_means = sentence_means - sentence_means.dot(model.pc.transpose()) * model.pc
+
+    return original_indices, sentence_means

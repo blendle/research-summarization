@@ -42,10 +42,6 @@ def textrank(sentences,
         # if vectorized == True, use vectorized sentence representations for similarity matrix
         distance_matrix = pairwise_distances(sent_representations, metric='cosine')
         similarity_matrix = np.subtract(1, distance_matrix)
-        # Clip negative values, as these are not meaningful for TextRank (is
-        # only needed PC-removed sentence vectors, as normal averages are apparently
-        # in positive space)
-        similarity_matrix = similarity_matrix.clip(0)
         # Use PageRank algorithm on similarity matrix
         nx_graph = nx.from_numpy_matrix(similarity_matrix)
 

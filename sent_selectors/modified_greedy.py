@@ -9,7 +9,8 @@ def modified_greedy(sentences,
                     stopwords,
                     original_indices,
                     sent_representations,
-                    objective_function):
+                    objective_function,
+                    min_sentence_length):
     """Implementation of the MMR summarizer as described in Lin & Bilmes (2010)."""
 
     # Initialize stuff
@@ -44,12 +45,12 @@ def modified_greedy(sentences,
     preprocessed = [[word.translate(str.maketrans('', '', string.punctuation))
                      for word in sentence] for sentence in preprocessed]
     # Remove OOV words
-    sentence_words = [[word for word in sentence if word in model.vocab]
+    sentence_words = [[word for word in sentence if word in model.model.vocab]
                       for sentence in preprocessed]
     # Deduplicate & flatten
     bag_of_words = list(set([word for sentence in sentence_words for word in sentence]))
     # Look up in-vocabulary word vectors
-    vectorized = [(word, model[word]) for word in bag_of_words]
+    vectorized = [(word, model.model[word]) for word in bag_of_words]
     # Construct word similarity matrix for all words in article object
     names, vectors = zip(*vectorized)
     # word_distance_matrix = pairwise_distances(vectors, metric='euclidean')
@@ -119,8 +120,9 @@ def modified_greedy(sentences,
                                          clustered_indices,
                                          all_indices,
                                          summary_indices+[i])
-                      if summary_length + sentence_lengths[i] <= 100
-                      else np.nan for i in candidate_indices]
+                      if sentence_lengths[i] > min_sentence_length
+                      else np.nan
+                      for i in candidate_indices]
 
         # If there are no candidates left, break the loop
         if all(np.isnan(score) for score in new_scores):
@@ -138,6 +140,8 @@ def modified_greedy(sentences,
             summary_indices.append(candidate_indices[best_index])
             summary_length += sentence_lengths[candidate_indices[best_index]]
             candidate_indices.pop(best_index)
+            if summary_length >= 100:
+                break
 
     # Last step: compare singleton score with summary score, and pick best as summary
     final_summary_score = objective_function(similarity_matrix,

@@ -27,4 +27,4 @@ Some files are not included:
 * nltk
 * beautifulsoup4
 * scikit_learn
-* typing
+* torch
