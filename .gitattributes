@@ -2,4 +2,6 @@ models/word2vec/blendle/* filter=lfs diff=lfs merge=lfs -text
 models/bigram_svd* filter=lfs diff=lfs merge=lfs -text
 rnn/saved_models/blendle/* filter=lfs diff=lfs merge=lfs -text
 rnn/saved_models/google/* filter=lfs diff=lfs merge=lfs -text
-
+blendle_word2vec/de/* filter=lfs diff=lfs merge=lfs -text
+blendle_word2vec/nl/* filter=lfs diff=lfs merge=lfs -text
+blendle_word2vec/en/* filter=lfs diff=lfs merge=lfs -text
