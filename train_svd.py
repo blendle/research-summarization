@@ -21,21 +21,21 @@ with open(stopword_path) as fh:
 
 # FOR DUC 2002 DATASET
 # dataset_name = 'duc'
-# data_dirname = "/home/Lucas/blendle/data/duc/2002/docs"
-# sum_dirname = "/home/Lucas/blendle/data/duc/2002/extracts_abstracts"
+# data_dirname = # TODO: set path
+# sum_dirname = # TODO: set path
 # articles = list(ducproc.data_generator(data_dirname))
 # ducproc.add_summaries(articles, sum_dirname)
 
 # FOR TAC 2008 DATASET
 # dataset_name = 'tac'
-# data_dirname = '/home/Lucas/blendle/data/tac/2008/docs'
-# sum_dirname = '/home/Lucas/blendle/data/tac/2008/summaries'
+# data_dirname = # TODO: set path
+# sum_dirname = # TODO: set path
 # articles = list(tacproc.data_generator(data_dirname))
 
 # FOR OPINOSIS DATASET
 dataset_name = 'opinosis'
-data_dirname = '/Users/Lucas/blendle/benchmark_sets/opinosis/topics'
-sum_dirname = '/Users/Lucas/blendle/benchmark_sets/opinosis/summaries'
+data_dirname = 'datasets/Opinosis/topics'
+sum_dirname = 'datasets/Opinosis/summaries'
 articles = list(opiproc.data_generator(data_dirname))
 opiproc.add_summaries(articles, sum_dirname)
 
