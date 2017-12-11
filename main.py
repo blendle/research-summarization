@@ -3,16 +3,15 @@ os.chdir("/home/Lucas/blendle/blendle-etl")
 # Import Torch here to avoid static TLS issues while debugging in PyCharm
 import torch
 
-import bin.summarization.duc02processor as ducproc
-import bin.summarization.tac08processor as tacproc
-import bin.summarization.opinosisprocessor as opiproc
-from bin.summarization.rouge import evaluate
-import bin.summarization.timer as timer
+import data_extractors.duc02processor as ducproc
+import data_extractors.tac08processor as tacproc
+import data_extractors.opinosisprocessor as opiproc
+from rouge import evaluate
 import json
 import numpy as np
 import pprint as pp
 
-from blendle.tasks.enrich.itemprofiles import Pipeline
+from enrichers.pipeline import Pipeline
 import warnings
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', r'All-NaN (slice|axis) encountered')
@@ -97,11 +96,11 @@ def eval_ref_test(articles, dataset_name):
 
 
 # FOR DUC 2002 DATASET
-dataset_name = 'duc'
-data_dirname = "/home/Lucas/blendle/data/duc/2002/docs"
-sum_dirname = "/home/Lucas/blendle/data/duc/2002/extracts_abstracts"
-articles = list(ducproc.data_generator(data_dirname))
-ducproc.add_summaries(articles, sum_dirname)
+# dataset_name = 'duc'
+# data_dirname = "/home/Lucas/blendle/data/duc/2002/docs"
+# sum_dirname = "/home/Lucas/blendle/data/duc/2002/extracts_abstracts"
+# articles = list(ducproc.data_generator(data_dirname))
+# ducproc.add_summaries(articles, sum_dirname)
 
 # FOR TAC 2008 DATASET
 # dataset_name = 'tac'
@@ -113,27 +112,25 @@ ducproc.add_summaries(articles, sum_dirname)
 # tacproc.add_summaries(articles, sum_dirname)
 
 # FOR OPINOSIS DATASET
-# dataset_name = 'opinosis'
-# data_dirname = '/home/Lucas/blendle/data/opinosis/topics'
-# sum_dirname = '/home/Lucas/blendle/data/opinosis/summaries'
-# articles = list(opiproc.data_generator(data_dirname))
-# opiproc.add_summaries(articles, sum_dirname)
+dataset_name = 'opinosis'
+data_dirname = '/home/Lucas/blendle/data/opinosis/topics'
+sum_dirname = '/home/Lucas/blendle/data/opinosis/summaries'
+articles = list(opiproc.data_generator(data_dirname))
+opiproc.add_summaries(articles, sum_dirname)
 
-with timer.new('Loading pipeline'):
-    pipeline = Pipeline(('cleaner',
-                         'sentence_splitter',
-                         'tokenizer',
-                         'stemmer',
-                         'postagger',
-                         'summarizer'
-                         ),
-                        config={},
-                        adapter='item',
-                        dataset_name=dataset_name
-                        )
-    # To retrieve article lengths, make stemmer persistent
-    pipeline.enrichers['stemmer'].persistent = True
-    print("")
+pipeline = Pipeline(('cleaner',
+                     'sentence_splitter',
+                     'tokenizer',
+                     'stemmer',
+                     'postagger',
+                     'summarizer'
+                     ),
+                    config={},
+                    adapter='item',
+                    dataset_name=dataset_name
+                    )
+# To retrieve article lengths, make stemmer persistent
+pipeline.enrichers['stemmer'].persistent = True
 
 for index, article in enumerate(articles):
     pipeline(article)
@@ -141,6 +138,6 @@ for index, article in enumerate(articles):
 
 
 eval_ref_test(articles=articles, dataset_name=dataset_name)
-# save_ref_summaries(articles=articles, dataset_name=dataset_name)
+save_ref_summaries(articles=articles, dataset_name=dataset_name)
 save_summaries(articles=articles, dataset_name=dataset_name)
 eval_summaries(articles=articles, dataset_name=dataset_name)

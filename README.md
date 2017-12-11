@@ -29,3 +29,4 @@ Some files are not included:
 * beautifulsoup4
 * scikit_learn
 * torch
+* permute
