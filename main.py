@@ -64,20 +64,20 @@ def eval_summaries(articles, dataset_name, save_path):
 
 # General settings:
 # Path for saving summaries
-summary_save_path = # TODO: set path
-eval_save_path = # TODO: set path
+summary_save_path = 'save_dir/summaries'
+eval_save_path = 'save_dir/evals'
 
 # FOR DUC 2002 DATASET
 # dataset_name = 'duc'
-# data_dirname = # TODO: set path
-# sum_dirname = # TODO: set path
+# data_dirname = 'datasets/DUC-2002/articles'
+# sum_dirname = 'datasets/DUC-2002/summaries'
 # articles = list(ducproc.data_generator(data_dirname))
 # ducproc.add_summaries(articles, sum_dirname)
 
 # FOR TAC 2008 DATASET
 # dataset_name = 'tac'
-# data_dirname = # TODO: set path
-# sum_dirname = # TODO: set path
+# data_dirname = 'datasets/TAC-2008/articles'
+# sum_dirname = 'datasets/TAC-2008/summaries'
 # articles = list(tacproc.data_generator(data_dirname))
 # # Articles are now actually clusters:
 # articles = tacproc.merge_clusters(articles)
