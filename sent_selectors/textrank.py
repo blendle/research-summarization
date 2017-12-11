@@ -28,8 +28,7 @@ def textrank(sentences,
         # if vectorized == False, use original textrank similarity for similarity matrix
         preprocessed_sentences = [[stem for word_index, (word, stem) in enumerate(sentence)
                                    if postagged[sentence_index][word_index][1] in tagfilter
-                                   and not word in stopwords
-                                   ]
+                                   and not word in stopwords]
                                   for sentence_index, sentence in enumerate(stemmed)]
         similarity_matrix = sparse.csr_matrix([[similarity_textrank(s1, s2)
                                                 if s1 and s2 else 0.
